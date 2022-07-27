@@ -76,8 +76,8 @@ if launch == True:
             #Manip de ménage
             ae["Durée moyenne de réponse IVR inclus"].fillna(0, inplace = True)
             ae["DMR"] = ae["Durée moyenne de réponse IVR inclus"].astype(int)
-            ae["DMT Répondus"].fillna(0, inplace = True)
-            ae["DMT Répondus"] = ae["DMT Répondus"].astype(int)
+            ae["DMT"].fillna(0, inplace = True)
+            ae["DMT"] = ae["DMT"].astype(int)
 
             ae_temp = ae[['Date', 
                           'Flux', 
@@ -85,13 +85,13 @@ if launch == True:
                           "Nb appels répondus", 
                           "Nb Appels Répondus en moins de 90s", 
                           'DMR', 
-                          "DMT Répondus"
+                          "DMT"
                          ]]
             ae_temp.dropna(axis=0, how='any', inplace = True)
 
             ae_temp.rename({"Nb appels répondus":"nb_ae", 
                             "Nb Appels Répondus en moins de 90s":"nb_ae_tr90", 
-                            "DMT Répondus":"dmt"}, axis = 1, inplace = True)                
+                            "DMT":"dmt"}, axis = 1, inplace = True)                
 
             ae_temp['Date'] = pd.to_datetime(ae_temp['Date'], errors='coerce', utc=True) 
 
@@ -116,19 +116,19 @@ if launch == True:
             ae_temp = ae_temp.loc[ae_temp['creneau'] != '07:30']
             ae_temp = ae_temp.loc[ae_temp['creneau'] != '00:00']                
 
-            ae_temp_all = ae_temp[ae_temp['Flux'].isin(['AMPLITEL_SUPPORT_TECHNIQUE', 'AMPLITEL_CR_LIVE'])]
+            ae_temp_all = ae_temp[ae_temp['Flux'].isin(['PILOTAGE_TECHNICIEN', 'VALIDATION_CR'])]
             
             ae_temp_all['cs_ae_tr90']  = ae_temp_all['nb_ae_tr90'].cumsum() 
             ae_temp_all['cs_ae']  = ae_temp_all['nb_ae'].cumsum() 
             ae_temp_all['cs_tr90']  = (ae_temp_all['cs_ae_tr90'] / ae_temp_all['cs_ae']) * 100         
             
-            ae_temp_tech = ae_temp[ae_temp['Flux'].isin(['AMPLITEL_SUPPORT_TECHNIQUE'])]
+            ae_temp_tech = ae_temp[ae_temp['Flux'].isin(['PILOTAGE_TECHNICIEN'])]
             
             ae_temp_tech['cs_ae_tr90']  = ae_temp_tech['nb_ae_tr90'].cumsum() 
             ae_temp_tech['cs_ae']  = ae_temp_tech['nb_ae'].cumsum() 
             ae_temp_tech['cs_tr90']  = (ae_temp_tech['cs_ae_tr90'] / ae_temp_tech['cs_ae']) * 100             
                      
-            ae_temp_cr = ae_temp[ae_temp['Flux'].isin(['AMPLITEL_CR_LIVE'])]    
+            ae_temp_cr = ae_temp[ae_temp['Flux'].isin(['VALIDATION_CR'])]    
             
             ae_temp_cr['cs_ae_tr90']  = ae_temp_cr['nb_ae_tr90'].cumsum() 
             ae_temp_cr['cs_ae']  = ae_temp_cr['nb_ae'].cumsum() 
@@ -270,8 +270,8 @@ with c1:
         df_temp.reset_index(inplace = True)
         df_temp = df_temp.loc[df_temp['creneau'] != '20:00']
         df_temp.set_index('creneau', inplace = True)
-        df_temp.fillna(0, axis = 1, inplace = True)  
-
+        df_temp.fillna(0, axis = 1, inplace = True) 
+        
         df_dmt = df_temp.groupby('creneau').agg(
             med_dmt = ('dmt','median'))       
 
@@ -341,7 +341,7 @@ with c1:
     df_fe = pd.merge(df_fe.reset_index(), df.reset_index(), on="creneau")
     df_fe = df_fe[['creneau', 'nb_ae', 'AE']]
     df_fe.rename({'AE':'nb_ae_prev'}, axis = 1, inplace = True)        
-
+    
     df_tr = pd.merge(df_tr.reset_index(), df.reset_index(), on="creneau")
     df_tr = df_tr[['creneau', 'TR90', 'med_tr']]
 
