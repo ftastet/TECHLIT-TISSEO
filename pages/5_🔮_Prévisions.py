@@ -156,7 +156,7 @@ with c1:
     dim_output = st.radio("🔧 DIMENSIONNEMENT", key = 4, options = ('ETP', 'AE'), horizontal = True)
 
 with c2:
-    dim_flux = st.radio("🔧 FLUX", key = 4, options = ('ALL', 'TECH', 'CR'), horizontal = True)  
+    dim_flux = st.radio("🔧 FLUX", key = 5, options = ('ALL', 'TECH', 'CR'), horizontal = True)  
     
 if dim_flux == 'ALL':   
     df_to_chart = df_all
